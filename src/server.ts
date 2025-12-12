@@ -157,6 +157,20 @@ app.post("/todos", async(req: Request, res: Response) => {
   }
 })
 
+
+
+// get all todos
+app.get("/todos", async(req: Request, res: Response) => {
+  try {
+    const result = await pool.query(
+      `SELECT * FROM todos`
+    )
+    return sendResponse(res, 200, true, "todos fetch successfully", result.rows);
+  } catch (error: any) {
+    return sendResponse(res, 500, false, error.message);
+  }
+})
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
