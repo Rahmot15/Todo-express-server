@@ -140,6 +140,23 @@ app.delete("/users/:id", async(req: Request, res: Response) => {
 })
 
 
+
+// ToDos
+
+// create todo
+app.post("/todos", async(req: Request, res: Response) => {
+  const {user_id, title} = req.body
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO todos(user_id, title) VALUES($1, $2) RETURNING*`, [user_id, title]
+    )
+    return sendResponse(res,201,true,"todos created successfully", result.rows[0])
+  } catch (error: any) {
+    return sendResponse(res,500,false,error.message)
+  }
+})
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
