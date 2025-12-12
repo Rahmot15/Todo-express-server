@@ -53,6 +53,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello World.......This is a Todo server!");
 });
 
+
 // create users
 app.post("/users", async (req: Request, res: Response) => {
   const { name, email } = req.body;
@@ -120,7 +121,6 @@ app.put("/users/:id", async(req: Request, res: Response) => {
 })
 
 
-
 // delete user
 app.delete("/users/:id", async(req: Request, res: Response) => {
   try {
@@ -180,7 +180,7 @@ app.get("/todos/:id", async(req: Request, res: Response) => {
     )
 
     if(result.rows.length === 0) {
-      return sendResponse(res, 404, false, "user not found");
+      return sendResponse(res, 404, false, "todo not found");
     } else {
       return sendResponse(res, 200, true, "single todo fetch successfully", result.rows[0]);
     }
@@ -189,6 +189,25 @@ app.get("/todos/:id", async(req: Request, res: Response) => {
   }
 })
 
+
+// update todo
+app.put("/todos/:id", async(req: Request, res: Response) => {
+  const {user_id, title} = req.body
+  try {
+    const result = await pool.query(
+      `UPDATE todos SET user_id=$1, title=$2 WHERE id=$3 RETURNING *`,
+      [user_id, title, req.params.id]
+    )
+
+    if(result.rows.length === 0) {
+      return sendResponse(res, 404, false, "todo not found");
+    } else {
+      return sendResponse(res, 200, true, "update todo successfully", result.rows[0]);
+    }
+  } catch (error: any) {
+    return sendResponse(res, 500, false, error.message);
+  }
+})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
