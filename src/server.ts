@@ -209,6 +209,25 @@ app.put("/todos/:id", async(req: Request, res: Response) => {
   }
 })
 
+
+// delete todo
+app.delete("/todos/:id", async(req: Request, res: Response) => {
+  try {
+    const result = await pool.query(
+      `DELETE FROM todos WHERE id = $1`,
+      [req.params.id]
+    )
+
+    if(result.rowCount === 0) {
+      return sendResponse(res, 404, false, "todo not found");
+    } else {
+      return sendResponse(res, 200, true, "todo delete successfully", result.rows);
+    }
+  } catch (error: any) {
+    return sendResponse(res, 500, false, error.message);
+  }
+})
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
